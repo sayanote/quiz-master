@@ -25,3 +25,12 @@ uv run main.py --reload
 
 ## APIs
 
+### Quiz
+
+* GET /apis/quiz
+    * Get all quizzes
+* GET /apis/quiz?id={quiz_id}
+    * Get quiz by id
+* GET /apis/quiz?n={n}
+    * Get n random quizzes
+

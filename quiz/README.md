@@ -34,3 +34,9 @@ uv run main.py --reload
 * GET /apis/quiz?n={n}
     * Get n random quizzes
 
+* POST /apis/quiz
+    * Create new quiz
+* PUT /apis/quiz/{quiz_id}
+    * Update quiz
+* DELETE /apis/quiz/{quiz_id}
+    * Delete quiz

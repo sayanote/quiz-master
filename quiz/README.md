@@ -7,3 +7,7 @@
     * Distribute quiz to Game Service
     * Update quiz status
     * Provide management screen
+
+
+## APIs
+

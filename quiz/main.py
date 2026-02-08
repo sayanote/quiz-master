@@ -15,5 +15,15 @@ def health():
 
 
 if __name__ == "__main__":
+    import argparse
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8989)
+    
+    parser = argparse.ArgumentParser(description="Run Quiz Service API")
+    parser.add_argument(
+        "--reload",
+        action="store_true",
+        help="Run uvicorn in reload mode for development"
+    )
+    args = parser.parse_args()
+    
+    uvicorn.run("main:app", host="0.0.0.0", port=8989, reload=args.reload)

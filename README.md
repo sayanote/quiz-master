@@ -20,7 +20,7 @@ architecture-beta
 ```
 
 
-- `quiz_service/`: Quiz data manager.
+- `manager/`: Quiz data manager.
     - Create, Update, Delete quizes
     - Manages the usage data of all quiz
     - Serve the quiz data to core server

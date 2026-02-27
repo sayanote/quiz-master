@@ -2,6 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 class ChoiceQuiz(models.Model):
+    """
+    The representation of 4-choices quiz
+    """
     text = models.CharField(max_length=128)
     correct_answer = models.CharField(max_length=128)
     wrong_option_1 = models.CharField(max_length=128)
@@ -10,7 +13,7 @@ class ChoiceQuiz(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     frequency = models.PositiveIntegerField(default=0)
     n_of_correct = models.PositiveIntegerField(default=0)
-    
+
 
     def clean(self):
         super().clean()

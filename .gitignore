@@ -2,3 +2,7 @@
 
 .env*
 getting_started_django
+
+__pycache__
+
+*.skill

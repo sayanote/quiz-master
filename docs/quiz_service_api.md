@@ -156,3 +156,46 @@ curl -X POST http://127.0.0.1:8000/quizzes/count/?id=1
 - `400 Bad Request`: Returned if the `id` parameter is missing.
 - `404 Not Found`: Returned if no quiz exists with the provided ID.
 - `405 Method Not Allowed`: Returned if the request method is not POST.
+
+---
+
+## 4. Increment Correct Count
+
+Increments the `n_of_correct` field of a specific quiz by 1. This should be called whenever a player answers a quiz correctly.
+
+### Endpoint
+`POST /quizzes/correct/`
+
+### Parameters
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `int` | (Query parameter) The unique identifier of the quiz to increment. |
+
+### Response
+**Status Code:** `200 OK`
+
+**Body (JSON):**
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `message` | `string` | Success message. |
+| `id` | `integer` | ID of the updated quiz. |
+| `new_n_of_correct` | `integer` | The updated correct count value. |
+
+### Example Request
+```sh
+curl -X POST http://127.0.0.1:8000/quizzes/correct/?id=1
+```
+
+### Example Response
+```json
+{
+    "message": "Correct count incremented",
+    "id": 1,
+    "new_n_of_correct": 86
+}
+```
+
+### Errors
+- `400 Bad Request`: Returned if the `id` parameter is missing.
+- `404 Not Found`: Returned if no quiz exists with the provided ID.
+- `405 Method Not Allowed`: Returned if the request method is not POST.

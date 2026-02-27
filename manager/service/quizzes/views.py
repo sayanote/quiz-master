@@ -65,3 +65,19 @@ def count_frequency(request):
         "id": quiz.id,
         "new_frequency": quiz.frequency
     })
+
+@require_POST
+def count_correct(request):
+    quiz_id = request.GET.get('id')
+    if not quiz_id:
+        return JsonResponse({"error": "id parameter is required"}, status=400)
+    
+    quiz = get_object_or_404(ChoiceQuiz, pk=quiz_id)
+    quiz.n_of_correct += 1
+    quiz.save()
+    
+    return JsonResponse({
+        "message": "Correct count incremented",
+        "id": quiz.id,
+        "new_n_of_correct": quiz.n_of_correct
+    })

@@ -139,3 +139,42 @@ class QuizAPITests(TestCase):
         url = reverse('count_frequency')
         response = self.client.get(f"{url}?id={self.quiz1.id}")
         self.assertEqual(response.status_code, 405)
+
+    def test_count_correct_success(self):
+        """
+        Test that the count correct API increments the n_of_correct field.
+        """
+        url = reverse('count_correct')
+        response = self.client.post(f"{url}?id={self.quiz1.id}")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['new_n_of_correct'], 6)
+        
+        # Verify in DB
+        self.quiz1.refresh_from_db()
+        self.assertEqual(self.quiz1.n_of_correct, 6)
+
+    def test_count_correct_no_id(self):
+        """
+        Test that the count correct API returns 400 if no ID is provided.
+        """
+        url = reverse('count_correct')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_count_correct_not_found(self):
+        """
+        Test that the count correct API returns 404 if quiz ID does not exist.
+        """
+        url = reverse('count_correct')
+        response = self.client.post(f"{url}?id=9999")
+        self.assertEqual(response.status_code, 404)
+
+    def test_count_correct_get_not_allowed(self):
+        """
+        Test that the count correct API returns 405 for GET requests.
+        """
+        url = reverse('count_correct')
+        response = self.client.get(f"{url}?id={self.quiz1.id}")
+        self.assertEqual(response.status_code, 405)

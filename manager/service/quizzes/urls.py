@@ -5,4 +5,5 @@ urlpatterns = [
     path('<int:quiz_id>/', views.quiz_detail, name='quiz_detail'),
     path('random/', views.random_quizzes, name='random_quizzes'),
     path('count/', views.count_frequency, name='count_frequency'),
+    path('correct/', views.count_correct, name='count_correct'),
 ]

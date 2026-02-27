@@ -33,7 +33,23 @@ architecture-beta
 - `frontend/`: User and spectator screens
     - Send requests to backend core server
     - Receive the messages from backend core server and change the UI
-    
+
+# How to run Quiz Manager
+
+1. Use the following command in the root directory to start the server:
+    ```sh
+    make run-manager
+    ```
+2. Access the Quiz Manager and API:
+    - **Quiz Admin Panel**: http://127.0.0.1:8000/admin/
+    - **Quiz API**: http://127.0.0.1:8000/quizzes/<quiz_id>/
+
+To run tests:
+```sh
+make test-manager
+```
+
 # APIs
 
-* [Quiz API](backend/README.md#quiz-api)
+* [Quiz Service API (manager)](docs/quiz_service_api.md)
+* [Mock Quiz API (backend)](backend/README.md#quiz-api)

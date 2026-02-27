@@ -1,4 +1,5 @@
 import random
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import ChoiceQuiz
@@ -48,3 +49,19 @@ def random_quizzes(request):
         })
     
     return JsonResponse(data, safe=False)
+
+@require_POST
+def count_frequency(request):
+    quiz_id = request.GET.get('id')
+    if not quiz_id:
+        return JsonResponse({"error": "id parameter is required"}, status=400)
+    
+    quiz = get_object_or_404(ChoiceQuiz, pk=quiz_id)
+    quiz.frequency += 1
+    quiz.save()
+    
+    return JsonResponse({
+        "message": "Frequency incremented",
+        "id": quiz.id,
+        "new_frequency": quiz.frequency
+    })

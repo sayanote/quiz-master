@@ -100,3 +100,42 @@ class QuizAPITests(TestCase):
         self.assertEqual(response.status_code, 400)
         response = self.client.get(f"{url}?n=-1")
         self.assertEqual(response.status_code, 400)
+
+    def test_count_frequency_success(self):
+        """
+        Test that the count frequency API increments the frequency field.
+        """
+        url = reverse('count_frequency')
+        response = self.client.post(f"{url}?id={self.quiz1.id}")
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['new_frequency'], 11)
+        
+        # Verify in DB
+        self.quiz1.refresh_from_db()
+        self.assertEqual(self.quiz1.frequency, 11)
+
+    def test_count_frequency_no_id(self):
+        """
+        Test that the count frequency API returns 400 if no ID is provided.
+        """
+        url = reverse('count_frequency')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 400)
+
+    def test_count_frequency_not_found(self):
+        """
+        Test that the count frequency API returns 404 if quiz ID does not exist.
+        """
+        url = reverse('count_frequency')
+        response = self.client.post(f"{url}?id=9999")
+        self.assertEqual(response.status_code, 404)
+
+    def test_count_frequency_get_not_allowed(self):
+        """
+        Test that the count frequency API returns 405 for GET requests.
+        """
+        url = reverse('count_frequency')
+        response = self.client.get(f"{url}?id={self.quiz1.id}")
+        self.assertEqual(response.status_code, 405)

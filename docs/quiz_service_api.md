@@ -113,3 +113,46 @@ curl http://127.0.0.1:8000/quizzes/random/?n=2
 
 ### Errors
 - `400 Bad Request`: Returned if `n` is missing or not a positive integer.
+
+---
+
+## 3. Increment Quiz Frequency
+
+Increments the `frequency` field of a specific quiz by 1. This should be called whenever a quiz is presented to a player.
+
+### Endpoint
+`POST /quizzes/count/`
+
+### Parameters
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `int` | (Query parameter) The unique identifier of the quiz to increment. |
+
+### Response
+**Status Code:** `200 OK`
+
+**Body (JSON):**
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `message` | `string` | Success message. |
+| `id` | `integer` | ID of the updated quiz. |
+| `new_frequency` | `integer` | The updated frequency value. |
+
+### Example Request
+```sh
+curl -X POST http://127.0.0.1:8000/quizzes/count/?id=1
+```
+
+### Example Response
+```json
+{
+    "message": "Frequency incremented",
+    "id": 1,
+    "new_frequency": 101
+}
+```
+
+### Errors
+- `400 Bad Request`: Returned if the `id` parameter is missing.
+- `404 Not Found`: Returned if no quiz exists with the provided ID.
+- `405 Method Not Allowed`: Returned if the request method is not POST.

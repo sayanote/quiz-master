@@ -31,7 +31,7 @@ app.get('/health', (req, res) => {
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log(`[Socket] New connection: ${socket.id}`);
-  
+
   // Send current state upon connection
   socket.emit('game_state_update', gameManager.getState());
 

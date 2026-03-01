@@ -31,6 +31,8 @@ This is the Node.js/TypeScript and Socket.IO real-time backend service for the Q
 
 ## WebSocket API Manual
 
+For a detailed flow of events and message definitions, refer to the [Backend Architecture: Sequence & Message Definitions](../docs/backend_sequence.md).
+
 Connect to the server using a Socket.IO client at: `ws://localhost:4000`
 
 ### 1. Connection & Initial State

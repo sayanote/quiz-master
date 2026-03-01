@@ -14,6 +14,9 @@ The whole system architecture looks like below:
 * Game state management (players' score, judgement of answers, sending informations to spectator screens, etc.)
 * UI distribution (Registration form, Answer button, Spectator screen, etc.)
 
+**Detailed Design**:
+* [Backend Architecture: Sequence & Message Definitions](./backend_sequence.md)
+
 
 ### Quiz Service
 

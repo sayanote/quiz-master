@@ -57,7 +57,7 @@ class GameManager {
     if (this.phase !== GamePhase.REGISTRATION) {
       throw new Error('Game is not in the registration phase.');
     }
-    
+
     if (this.players.length >= MAX_PLAYERS) {
       throw new Error('Game is full.');
     }
@@ -81,7 +81,7 @@ class GameManager {
     this.players.push(newPlayer);
     console.log(`[GameManager] Player registered: ${newPlayer.name}`);
     this.broadcastState();
-    
+
     return newPlayer;
   }
 

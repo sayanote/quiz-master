@@ -1,9 +1,9 @@
 [project]
-name = "quiz"
+name = "quiz-manager"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.128.5",
+    "django>=6.0.2",
 ]

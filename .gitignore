@@ -5,4 +5,14 @@ getting_started_django
 
 __pycache__
 
+
+# Actual quiz data file.
+# Managing this file leads to unintegrity of quiz data and model.
+db.sqlite3
+
+# Ignores gemini cli files
 *.skill
+.gemini
+
+# Getting started with new  technology
+study

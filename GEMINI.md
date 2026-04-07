@@ -52,6 +52,7 @@
 3. Access the mock API at `http://localhost:3000/quiz`
 
 ## Development Conventions
+- **Issue and Branching**: Before creating any branch, you MUST create an issue for the task you are handling. The branch name MUST include the issue number in the format `feature/<issue_number>-<short-descriptive-name>`.
 - **Data Integrity**: The `ChoiceQuiz` model includes validation to ensure correct answer counts do not exceed frequency.
 - **Naming**: Follow standard Django naming conventions for apps and models.
 - **Documentation**: Update `docs/` and `README.md` when architectural changes occur.

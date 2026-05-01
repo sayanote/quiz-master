@@ -1,0 +1,25 @@
+services:
+  # quiz-manager:
+  #   image: quiz-manager
+  
+  # backend:
+  #   build:
+
+
+  quiz-manager-db:
+    image: postgres:18
+    env_file:
+      - .env.local
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - quiz-manager-db-data:/var/lib/postgresql/data
+  
+volumes:
+  quiz-manager-db-data:
+
+  

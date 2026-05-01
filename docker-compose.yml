@@ -17,7 +17,7 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - quiz-manager-db-data:/var/lib/postgresql/data
+      - quiz-manager-db-data:/var/lib/postgresql
   
 volumes:
   quiz-manager-db-data:

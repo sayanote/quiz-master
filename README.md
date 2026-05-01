@@ -34,6 +34,24 @@ architecture-beta
     - Send requests to backend core server
     - Receive the messages from backend core server and change the UI
 
+# Running Quiz Master
+
+## Docker Compose
+
+By using Docker Compose, you can run all components in single command.
+
+To start Quiz Master, please run:
+
+```sh
+make run
+```
+
+If you want to stop Quiz Master, please run:
+
+```sh
+make stop
+```
+
 # How to run Quiz Manager
 
 1. Use the following command in the root directory to start the server:
@@ -48,6 +66,7 @@ To run tests:
 ```sh
 make test-manager
 ```
+
 
 # APIs
 

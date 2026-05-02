@@ -1,10 +1,17 @@
 services:
-  # quiz-manager:
-  #   image: quiz-manager
-  
-  # backend:
-  #   build:
-
+  quiz-manager:
+    build:
+      context: ./manager
+    env_file:
+      - .env.local
+    environment:
+      DB_HOST: quiz-manager-db
+      DB_PORT: ${DB_PORT} # Internal postgres port
+    ports:
+      - "${QUIZ_MANAGER_PORT}:8000"
+    depends_on:
+      quiz-manager-db:
+        condition: service_healthy
 
   quiz-manager-db:
     image: postgres:18
@@ -18,6 +25,11 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - quiz-manager-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   
 volumes:
   quiz-manager-db-data:

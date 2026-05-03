@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Socket.IO chat</title>
+    <style>
+        body {
+            margin: 0;
+            padding-bottom: 3rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="form" action="">
+        Player Name: <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('registerPlayer', { name: input.value });
+                input.value = '';
+            }
+        });
+
+        // Update the connection handler to receive the event:
+        socket.on('playerRegistered', (data) => {
+            console.log('Player registered successfully!', data);
+            alert(`Welcome, ${data.name}! Waiting for the quiz to start...`);
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>

@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 RUN npm run build
+# tsc doesn't copy static files like .html, so we do it manually
+RUN cp src/index.html dist/
 
 # Stage 2: Production
 FROM node:24-slim
@@ -19,6 +21,7 @@ RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 4000
+EXPOSE 4444
 
 CMD ["npm", "start"]
+

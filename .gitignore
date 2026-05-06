@@ -5,6 +5,8 @@ getting_started_django
 
 __pycache__
 
+# Backend build artifact directory
+backend/dist/
 
 # npm modules directory
 # npm packages are installed in `node_modules/` directory.

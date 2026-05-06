@@ -118,6 +118,9 @@
             font-size: 1.5rem;
             margin-bottom: 1rem;
             color: #333;
+            min-height: 3.5rem;
+            /* Reserve space to prevent jump */
+            text-align: left;
         }
 
         #answer-feedback {
@@ -210,6 +213,7 @@
         const socket = io();
         let myRole = null;
         let myName = "";
+        let typeWriterTimeout = null;
 
         // Screens
         const screens = {
@@ -259,6 +263,22 @@
             socket.emit('start_game');
         }
 
+        function typeWriter(element, text, speed = 100) {
+            if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
+            element.textContent = '';
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    typeWriterTimeout = setTimeout(type, speed);
+                } else {
+                    typeWriterTimeout = null;
+                }
+            }
+            type();
+        }
+
         // Socket Events
         socket.on('playerRegistered', (data) => {
             document.getElementById('display-player-name').textContent = data.name;
@@ -297,35 +317,40 @@
         });
 
         socket.on('new_question', (question) => {
-            // 
             console.log('New Question:', question);
-            // const options = question.options || [];
             const options = question.options;
+            const statement = question.statement || question.text;
 
             // Update Spectator View
-            document.getElementById('spec-question-text').textContent = question.statement || question.text;
+            const specText = document.getElementById('spec-question-text');
             const specOptions = document.getElementById('spec-options-container');
-            specOptions.innerHTML = options.map(opt => `<div class="choice-item">${opt}</div>`).join('');
+            if (myRole !== 'player') {
+                typeWriter(specText, statement);
+                specOptions.innerHTML = options.map(opt => `<div class="choice-item">${opt}</div>`).join('');
+            }
 
             // Update Player View
-            document.getElementById('player-question-text').textContent = question.statement || question.text;
+            const playerText = document.getElementById('player-question-text');
             const playerOptions = document.getElementById('player-options-container');
-            playerOptions.innerHTML = '';
-            document.getElementById('answer-feedback').style.display = 'none';
+            if (myRole === 'player') {
+                typeWriter(playerText, statement);
+                playerOptions.innerHTML = '';
+                document.getElementById('answer-feedback').style.display = 'none';
 
-            options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.textContent = opt;
-                btn.onclick = () => {
-                    socket.emit('submit_answer', { choiceIndex: index });
-                    const btns = playerOptions.querySelectorAll('button');
-                    btns.forEach(b => b.disabled = true);
-                    document.getElementById('answer-feedback').style.display = 'block';
-                    document.getElementById('answer-feedback').textContent = 'Answer submitted. Waiting...';
-                    document.getElementById('answer-feedback').className = '';
-                };
-                playerOptions.appendChild(btn);
-            });
+                options.forEach((opt, index) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = opt;
+                    btn.onclick = () => {
+                        socket.emit('submit_answer', { choiceIndex: index });
+                        const btns = playerOptions.querySelectorAll('button');
+                        btns.forEach(b => b.disabled = true);
+                        document.getElementById('answer-feedback').style.display = 'block';
+                        document.getElementById('answer-feedback').textContent = 'Answer submitted. Waiting...';
+                        document.getElementById('answer-feedback').className = '';
+                    };
+                    playerOptions.appendChild(btn);
+                });
+            }
         });
 
         socket.on('answer_result', (data) => {
@@ -333,7 +358,6 @@
             if (myRole === 'player') {
                 feedback.style.display = 'block';
                 feedback.textContent = `Correct Answer: ${data.correctAnswerText || data.correctAnswer}`;
-                // We could also highlight if this specific player was correct
             }
 
             // Spectator highlight

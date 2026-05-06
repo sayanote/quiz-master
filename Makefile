@@ -57,7 +57,7 @@ run-fe-dev:
 # ======================================
 run-be-dev:
 	@echo "Run backend development server..."
-	cd backend && npm run dev
+	@export $$(grep -v '^#' .env.local | xargs) && cd backend && npm run dev
 
 
 # ======================================

@@ -1,5 +1,6 @@
 services:
   quiz-manager:
+    container_name: quiz-manager
     build:
       context: ./manager
     env_file:
@@ -21,6 +22,7 @@ services:
 
   quiz-manager-db:
     image: postgres:18
+    container_name: quiz-manager-db
     env_file:
       - .env.local
     environment:
@@ -41,15 +43,19 @@ services:
   # Quiz Master main server (backend)
   # =================================
   backend:
+    container_name: quiz-master-backend
     build:
       context: ./backend
     env_file:
       - .env.local
     ports:
-      - "${BACKEND_PORT}:4444"
+      - "4000:4000"
     environment:
-      PORT: 4444
-      QUIZ_MANAGER_URL: http://quiz-manager:8000
+      # Quiz Master Serevr
+      BACKEND_PORT: 4000
+      # Quiz Manager Server
+      QUIZ_MANAGER_HOST: quiz-manager
+      QUIZ_MANAGER_PORT: 8000
     depends_on:
       quiz-manager:
         condition: service_healthy

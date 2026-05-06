@@ -41,6 +41,10 @@ sequenceDiagram
         Note over Master, Q: 3. Game Configuration & Quiz Loading
         Master->>F: Select Quiz Category/Difficulty/Timer
         F->>B: Emit 'configure_game' { settings }
+        B-->>F: Broadcast State Update (REGISTRATION with Settings)
+
+        Master->>F: Push "Start Game" Button
+        F->>B: Emit 'start_game'
         B->>Q: HTTP GET /api/quizzes/ (Fetch Data based on settings)
         Q-->>B: Return Quiz Data
         B-->>F: Broadcast State Update (PREPARATION)

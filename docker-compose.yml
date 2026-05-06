@@ -52,7 +52,7 @@ services:
       - "${BACKEND_PORT}:4000"
     environment:
       # Quiz Master Serevr
-      PORT: 4000
+      BACKEND_PORT: 4000
       # Quiz Manager Server
       QUIZ_MANAGER_HOST: quiz-manager
       QUIZ_MANAGER_PORT: 8000

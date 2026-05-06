@@ -1,49 +1,56 @@
 # Makefile for QuizMaster 2
 
-.PHONY: run-fe build-fe run stop run-manager test-manager migrate-manager createsuperuser-manager help
+.PHONY: run-fe build-fe run stop run-manager test-manager migrate-manager createsuperuser-manager help run-be-dev build-be
 
 # Default target
 help:
-	@echo "Available commands:"
-	@echo "  make run            - Run all components"
-	@echo "  make stop           - Stop all components"
-	@echo "  make run-manager    - Start the Quiz Manager (Django) server"
-	@echo "  make test-manager   - Run tests for the Quiz Manager"
-	@echo "  make migrate-manager - Run Django migrations"
-	@echo "  make createsuperuser-manager - Create a Django superuser"
+    @echo "Available commands:"
+    @echo "  make run            - Run all components"
+    @echo "  make stop           - Stop all components"
+    @echo "  make run-be-dev     - Start the Backend development server"
+    @echo "  make build-be       - Build the Backend service"
+    @echo "  make run-manager    - Start the Quiz Manager (Django) server"
+    @echo "  make test-manager   - Run tests for the Quiz Manager"
+    @echo "  make migrate-manager - Run Django migrations"
+    @echo "  make createsuperuser-manager - Create a Django superuser"
 
 # ======================================
-# Frontend
+# Frontend Development
 # ======================================
-run-fe:
-	@echo "** Currently this command is not defined. ** Skipped."
+run-fe-dev:
+    @echo "** Currently this command is not defined. ** Skipped."
 
-build-fe:
-	@echo "** Currently this command is not defined. ** Skipped."
+# ======================================
+# Backend Development
+# ======================================
+run-be-dev:
+    @echo "Run backend development server..."
+    cd backend && npm run dev
 
 
 # ========================================================
-# Run the whole Quiz Master Server using docker compose.
+# Run the whole Quiz Master Server syncing together
+# using docker compose.
 # ========================================================
 build:
-	@echo "Build all QuizMaster components."
-	
+    @echo "Build all QuizMaster components."
+    
 
 run:
-	@echo "Run all QuizMaster components using docker compose."
-	@docker compose --env-file .env.local up --build -d
-	
+    @echo "Run all QuizMaster components using docker compose."
+    @docker compose --env-file .env.local up --build -d
+
 tail-log:
-	@docker compose logs -f
-	
+    @docker compose logs -f
+
 
 stop:
-	@echo "Stop all QuizMaster components."
-	@docker compose --env-file .env.local down
+    @echo "Stop all QuizMaster components."
+    @docker compose --env-file .env.local down
 
 stop-rmi:
-	@echo "Stop all QuizMaster components and remove images."
-	@docker compose --env-file .env.local down --rmi all
+    @echo "Stop all QuizMaster components and remove images."
+    @docker compose --env-file .env.local down --rmi all
 
 
 # ======================================
@@ -52,16 +59,16 @@ stop-rmi:
 
 # Run the Django server from the manager/service directory
 run-manager:
-	@export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py runserver
+    @export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py runserver
 
 # Run the Django tests
 test-manager:
-	@export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py test quizzes
+    @export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py test quizzes
 
 # Run Django migrations
 migrate-manager:
-	@export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py migrate
+    @export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py migrate
 
 # Create a Django superuser
 createsuperuser-manager:
-	@export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py createsuperuser
+    @export $$(grep -v '^#' .env.local | xargs) && cd manager/service && ../.venv/bin/python manage.py createsuperuser

@@ -49,7 +49,7 @@ services:
     env_file:
       - .env.local
     ports:
-      - "${BACKEND_PORT}:4000"
+      - "4000:4000"
     environment:
       # Quiz Master Serevr
       BACKEND_PORT: 4000

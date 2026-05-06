@@ -15,17 +15,15 @@
             height: 100vh;
             background-color: #f0f2f5;
         }
-
         .container {
             background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
             width: 100%;
             max-width: 400px;
         }
-
         input {
             padding: 0.5rem;
             font-size: 1rem;
@@ -34,7 +32,6 @@
             margin-right: 0.5rem;
             flex-grow: 1;
         }
-
         button {
             padding: 0.5rem 1rem;
             font-size: 1rem;
@@ -44,21 +41,17 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         #form {
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
         }
-
-        #waiting {
+        #waiting, #spectator {
             color: #555;
         }
-
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3498db;
@@ -68,15 +61,25 @@
             animation: spin 2s linear infinite;
             margin: 1rem auto;
         }
-
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .player-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+            text-align: left;
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 0.5rem;
+        }
+        .player-list li {
+            padding: 0.25rem 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        .player-list li:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
@@ -84,36 +87,39 @@
 <body>
     <div class="container">
         <div id="registration">
-            <h1>QuizMaster に参加する</h1>
+            <h1>Join Quiz</h1>
             <div id="role-selection">
-                <p>ロールを選択:</p>
+                <p>Select your role:</p>
                 <div style="display: flex; gap: 1rem; justify-content: center;">
-                    <button type="button" onclick="selectRole('player')">プレイヤー</button>
-                    <button type="button" onclick="selectRole('spectator')"
-                        style="background-color: #6c757d;">観戦者</button>
+                    <button type="button" onclick="selectRole('player')">Player</button>
+                    <button type="button" onclick="selectRole('spectator')" style="background-color: #6c757d;">Spectator</button>
                 </div>
             </div>
-
+            
             <form id="form" style="display: none; margin-top: 1.5rem;">
                 <input id="input" placeholder="Your Name" autocomplete="off" required />
-                <button>参加受付</button>
-                <button type="button" onclick="resetRole()"
-                    style="background-color: #6c757d; margin-left: 0.5rem;">もどる</button>
+                <button>Join</button>
+                <button type="button" onclick="resetRole()" style="background-color: #6c757d; margin-left: 0.5rem;">Back</button>
             </form>
         </div>
 
         <div id="waiting" style="display: none;">
-            <h1>ようこそ, <span id="player-name"></span>!</h1>
+            <h1>Welcome, <span id="player-name"></span>!</h1>
             <div class="loader"></div>
-            <p>ゲームが始まるまでお待ちください</p>
+            <p>Waiting for the quiz to start...</p>
+            <h3>Players Joined:</h3>
+            <ul class="player-list js-player-list"></ul>
         </div>
 
         <div id="spectator" style="display: none;">
-            <h1>観戦モード</h1>
-            <p>ゲームの進行をお待ちください</p>
-            <div id="game-status">
-                ゲームの進行をお待ちください
+            <h1>Spectator Mode</h1>
+            <p>You are watching the game.</p>
+            <h3>Players Joined:</h3>
+            <ul class="player-list js-player-list"></ul>
+            <div id="game-status" style="margin-top: 1rem;">
+                Waiting for the game to progress...
             </div>
+            <button id="start-quiz-btn" style="margin-top: 2rem; background-color: #28a745;">Start Quiz</button>
         </div>
     </div>
 
@@ -129,6 +135,8 @@
         const playerNameSpan = document.getElementById('player-name');
         const form = document.getElementById('form');
         const input = document.getElementById('input');
+        const playerLists = document.querySelectorAll('.js-player-list');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
 
         let selectedRole = null;
 
@@ -158,11 +166,28 @@
             }
         });
 
+        startQuizBtn.addEventListener('click', () => {
+            console.log('Requesting to start quiz...');
+            socket.emit('startQuiz');
+        });
+
         socket.on('playerRegistered', (data) => {
             console.log('Player registered successfully!', data);
             registration.style.display = 'none';
             waiting.style.display = 'block';
             playerNameSpan.textContent = data.name;
+        });
+
+        socket.on('playerListUpdated', (data) => {
+            console.log('Player list updated:', data.players);
+            playerLists.forEach(list => {
+                list.innerHTML = '';
+                data.players.forEach(name => {
+                    const li = document.createElement('li');
+                    li.textContent = name;
+                    list.appendChild(li);
+                });
+            });
         });
     </script>
 </body>

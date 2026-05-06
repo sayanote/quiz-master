@@ -19,7 +19,7 @@ const io = new Server(httpServer, {
 
 const connectionManager = new ConnectionManager(io);
 
-const PORT = process.env.PORT || 4444;
+const PORT = process.env.BACKEND_PORT || 4444;
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -15,15 +15,17 @@
             height: 100vh;
             background-color: #f0f2f5;
         }
+
         .container {
             background: white;
             padding: 2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
         }
+
         input {
             padding: 0.5rem;
             font-size: 1rem;
@@ -32,26 +34,34 @@
             margin-right: 0.5rem;
             flex-grow: 1;
         }
+
         button {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
+            padding: 0.8rem 1rem;
+            font-size: 1.1rem;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.2s;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
         #form {
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
         }
-        #waiting, #spectator {
-            color: #555;
-        }
+
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3498db;
@@ -61,10 +71,17 @@
             animation: spin 2s linear infinite;
             margin: 1rem auto;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .player-list {
             list-style: none;
             padding: 0;
@@ -74,52 +91,116 @@
             border-radius: 4px;
             padding: 0.5rem;
         }
+
         .player-list li {
             padding: 0.25rem 0.5rem;
             border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
         }
-        .player-list li:last-child {
-            border-bottom: none;
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .choice-item {
+            padding: 1rem;
+            background: #e9ecef;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .quiz-statement {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        #answer-feedback {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            padding: 1rem;
+            border-radius: 6px;
+        }
+
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div id="registration">
+        <!-- Registration Section -->
+        <div id="registration-screen">
             <h1>Join Quiz</h1>
             <div id="role-selection">
                 <p>Select your role:</p>
-                <div style="display: flex; gap: 1rem; justify-content: center;">
-                    <button type="button" onclick="selectRole('player')">Player</button>
-                    <button type="button" onclick="selectRole('spectator')" style="background-color: #6c757d;">Spectator</button>
-                </div>
+                <button type="button" onclick="selectRole('player')">Player</button>
+                <button type="button" onclick="selectRole('spectator')"
+                    style="background-color: #6c757d;">Spectator</button>
             </div>
-            
-            <form id="form" style="display: none; margin-top: 1.5rem;">
-                <input id="input" placeholder="Your Name" autocomplete="off" required />
+
+            <form id="registration-form" style="display: none; margin-top: 1.5rem;">
+                <input id="player-name-input" placeholder="Your Name" autocomplete="off" required />
                 <button>Join</button>
-                <button type="button" onclick="resetRole()" style="background-color: #6c757d; margin-left: 0.5rem;">Back</button>
+                <button type="button" onclick="resetRole()" style="background-color: #6c757d;">Back</button>
             </form>
         </div>
 
-        <div id="waiting" style="display: none;">
-            <h1>Welcome, <span id="player-name"></span>!</h1>
+        <!-- Waiting Screen (Player) -->
+        <div id="waiting-screen" style="display: none;">
+            <h1>Welcome, <span id="display-player-name"></span>!</h1>
             <div class="loader"></div>
-            <p>Waiting for the quiz to start...</p>
-            <h3>Players Joined:</h3>
-            <ul class="player-list js-player-list"></ul>
+            <p>Waiting for the host to start...</p>
+            <h3>Current Players:</h3>
+            <ul id="player-list-waiting" class="player-list"></ul>
         </div>
 
-        <div id="spectator" style="display: none;">
-            <h1>Spectator Mode</h1>
-            <p>You are watching the game.</p>
-            <h3>Players Joined:</h3>
-            <ul class="player-list js-player-list"></ul>
-            <div id="game-status" style="margin-top: 1rem;">
-                Waiting for the game to progress...
+        <!-- Spectator/Host Screen -->
+        <div id="spectator-screen" style="display: none;">
+            <h1 id="spectator-title">Host Console</h1>
+            <div id="game-info">
+                <p>Phase: <strong id="current-phase">REGISTRATION</strong></p>
+                <div id="setup-controls">
+                    <button onclick="configureGame()">Configure (5 Qs)</button>
+                    <button id="start-btn" onclick="startGame()" style="background-color: #28a745;">START GAME</button>
+                </div>
             </div>
-            <button id="start-quiz-btn" style="margin-top: 2rem; background-color: #28a745;">Start Quiz</button>
+
+            <!-- Quiz Display for Spectator -->
+            <div id="spectator-quiz-display" style="display: none; margin-top: 2rem;">
+                <div class="quiz-statement" id="spec-question-text"></div>
+                <div id="spec-options-container" class="options-grid"></div>
+            </div>
+
+            <h3>Players Joined:</h3>
+            <ul id="player-list-spectator" class="player-list"></ul>
+        </div>
+
+        <!-- Player Game Screen -->
+        <div id="player-game-screen" style="display: none;">
+            <div class="quiz-statement" id="player-question-text"></div>
+            <div id="player-options-container" class="options-grid"></div>
+            <div id="answer-feedback" style="display: none;"></div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" style="display: none;">
+            <h1>Game Over!</h1>
+            <h3>Final Rankings:</h3>
+            <ul id="final-rankings" class="player-list"></ul>
+            <button onclick="location.reload()">New Game</button>
         </div>
     </div>
 
@@ -127,67 +208,156 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        let myRole = null;
+        let myName = "";
 
-        const registration = document.getElementById('registration');
-        const roleSelection = document.getElementById('role-selection');
-        const waiting = document.getElementById('waiting');
-        const spectator = document.getElementById('spectator');
-        const playerNameSpan = document.getElementById('player-name');
-        const form = document.getElementById('form');
-        const input = document.getElementById('input');
-        const playerLists = document.querySelectorAll('.js-player-list');
-        const startQuizBtn = document.getElementById('start-quiz-btn');
+        // Screens
+        const screens = {
+            registration: document.getElementById('registration-screen'),
+            waiting: document.getElementById('waiting-screen'),
+            spectator: document.getElementById('spectator-screen'),
+            playerGame: document.getElementById('player-game-screen'),
+            results: document.getElementById('results-screen')
+        };
 
-        let selectedRole = null;
+        function showScreen(name) {
+            Object.keys(screens).forEach(k => screens[k].style.display = k === name ? 'block' : 'none');
+        }
 
         function selectRole(role) {
-            selectedRole = role;
+            myRole = role;
             if (role === 'player') {
-                roleSelection.style.display = 'none';
-                form.style.display = 'flex';
-            } else if (role === 'spectator') {
+                document.getElementById('role-selection').style.display = 'none';
+                document.getElementById('registration-form').style.display = 'flex';
+            } else {
                 socket.emit('registerSpectator');
-                registration.style.display = 'none';
-                spectator.style.display = 'block';
+                showScreen('spectator');
             }
         }
 
         function resetRole() {
-            selectedRole = null;
-            roleSelection.style.display = 'block';
-            form.style.display = 'none';
+            myRole = null;
+            document.getElementById('role-selection').style.display = 'block';
+            document.getElementById('registration-form').style.display = 'none';
         }
 
-        form.addEventListener('submit', (e) => {
+        document.getElementById('registration-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            if (input.value && selectedRole === 'player') {
-                socket.emit('registerPlayer', { name: input.value });
-                input.value = '';
+            const nameInput = document.getElementById('player-name-input');
+            if (nameInput.value) {
+                myName = nameInput.value;
+                socket.emit('registerPlayer', { name: myName });
             }
         });
 
-        startQuizBtn.addEventListener('click', () => {
-            console.log('Requesting to start quiz...');
-            socket.emit('startQuiz');
-        });
+        // Host Actions
+        function configureGame() {
+            socket.emit('configure_game', { questionCount: 5, timerDuration: 15 });
+        }
 
+        function startGame() {
+            socket.emit('start_game');
+        }
+
+        // Socket Events
         socket.on('playerRegistered', (data) => {
-            console.log('Player registered successfully!', data);
-            registration.style.display = 'none';
-            waiting.style.display = 'block';
-            playerNameSpan.textContent = data.name;
+            document.getElementById('display-player-name').textContent = data.name;
+            showScreen('waiting');
         });
 
-        socket.on('playerListUpdated', (data) => {
-            console.log('Player list updated:', data.players);
-            playerLists.forEach(list => {
-                list.innerHTML = '';
-                data.players.forEach(name => {
-                    const li = document.createElement('li');
-                    li.textContent = name;
-                    list.appendChild(li);
-                });
+        socket.on('game_state_update', (state) => {
+            console.log('State Update:', state);
+            document.getElementById('current-phase').textContent = state.phase;
+
+            // Update player lists
+            const players = state.players || [];
+            const listHtml = players.map(p => `<li>${p.name} <span>${p.score} pts</span></li>`).join('');
+            document.getElementById('player-list-waiting').innerHTML = listHtml;
+            document.getElementById('player-list-spectator').innerHTML = listHtml;
+
+            if (state.phase === 'FINISHED') {
+                showScreen('results');
+                return;
+            }
+
+            if (state.phase === 'ONGOING' || state.phase === 'PREPARATION') {
+                if (myRole === 'player') {
+                    showScreen('playerGame');
+                } else {
+                    showScreen('spectator');
+                    document.getElementById('setup-controls').style.display = 'none';
+                    document.getElementById('spectator-quiz-display').style.display = 'block';
+                }
+            } else if (state.phase === 'REGISTRATION') {
+                if (myRole === 'spectator') {
+                    document.getElementById('setup-controls').style.display = 'block';
+                    document.getElementById('spectator-quiz-display').style.display = 'none';
+                }
+            }
+        });
+
+        socket.on('new_question', (question) => {
+            // 
+            console.log('New Question:', question);
+            // const options = question.options || [];
+            const options = [
+                question.correct_answer,
+                question.wrong_option_1,
+                question.wrong_option_2,
+                question.wrong_option_3
+            ];
+
+            // Update Spectator View
+            document.getElementById('spec-question-text').textContent = question.text;
+            const specOptions = document.getElementById('spec-options-container');
+            specOptions.innerHTML = options.map(opt => `<div class="choice-item">${opt}</div>`).join('');
+
+            // Update Player View
+            document.getElementById('player-question-text').textContent = question.text;
+            const playerOptions = document.getElementById('player-options-container');
+            playerOptions.innerHTML = '';
+            document.getElementById('answer-feedback').style.display = 'none';
+
+            options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    socket.emit('submit_answer', { choiceId: opt });
+                    const btns = playerOptions.querySelectorAll('button');
+                    btns.forEach(b => b.disabled = true);
+                    document.getElementById('answer-feedback').style.display = 'block';
+                    document.getElementById('answer-feedback').textContent = 'Answer submitted. Waiting...';
+                    document.getElementById('answer-feedback').className = '';
+                };
+                playerOptions.appendChild(btn);
             });
+        });
+
+        socket.on('answer_result', (data) => {
+            const feedback = document.getElementById('answer-feedback');
+            if (myRole === 'player') {
+                feedback.style.display = 'block';
+                feedback.textContent = `Correct Answer: ${data.correctAnswer}`;
+                // We could also highlight if this specific player was correct
+            }
+
+            // Spectator could also highlight the correct answer here
+            const specItems = document.querySelectorAll('#spec-options-container .choice-item');
+            specItems.forEach(item => {
+                if (item.textContent === data.correctAnswer) {
+                    item.style.backgroundColor = '#28a745';
+                    item.style.color = 'white';
+                }
+            });
+        });
+
+        socket.on('final_results', (data) => {
+            showScreen('results');
+            const rankings = document.getElementById('final-rankings');
+            const players = data.players || [];
+            rankings.innerHTML = players.map((p, i) =>
+                `<li>#${i + 1} ${p.name} <span>${p.score} pts</span></li>`
+            ).join('');
         });
     </script>
 </body>

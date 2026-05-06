@@ -64,6 +64,11 @@ io.on('connection', (socket) => {
     gameManager.startGame();
   });
 
+  socket.on('reset_game', () => {
+    console.log('Resetting game...');
+    gameManager.resetGame();
+  });
+
   socket.on('submit_answer', (data: { choiceIndex: number }) => {
     console.log(`Player ${socket.id} submitted answer index: ${data.choiceIndex}`);
     gameManager.submitAnswer(socket.id, data.choiceIndex);

@@ -211,6 +211,24 @@ class GameManager {
         this.io.emit('final_results', { players: this.state.players });
     }
 
+    public resetGame(): void {
+        this.state.phase = "REGISTRATION";
+        this.state.currentQuestionIndex = -1;
+        this.state.currentQuestion = undefined;
+        this.quizzes = [];
+        this.currentCorrectIndex = -1;
+
+        // Reset player scores and status for new game
+        this.state.players.forEach(p => {
+            p.score = 0;
+            p.rank = undefined;
+            p.lastAnswerIndex = undefined;
+            p.isCorrect = undefined;
+        });
+
+        this.broadcastState();
+    }
+
     private broadcastState(): void {
         this.io.emit('game_state_update', this.state);
     }

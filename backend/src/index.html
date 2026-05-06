@@ -203,7 +203,7 @@
             <h1>Game Over!</h1>
             <h3>Final Rankings:</h3>
             <ul id="final-rankings" class="player-list"></ul>
-            <button onclick="location.reload()">New Game</button>
+            <button onclick="resetGame()">New Game</button>
         </div>
     </div>
 
@@ -263,6 +263,14 @@
             socket.emit('start_game');
         }
 
+        function resetGame() {
+            if (myRole === 'player') {
+                showScreen('waiting');
+            } else {
+                socket.emit('reset_game');
+            }
+        }
+
         function typeWriter(element, text, speed = 100) {
             if (typeWriterTimeout) clearTimeout(typeWriterTimeout);
             element.textContent = '';
@@ -310,8 +318,11 @@
                 }
             } else if (state.phase === 'REGISTRATION') {
                 if (myRole === 'spectator') {
+                    showScreen('spectator');
                     document.getElementById('setup-controls').style.display = 'block';
                     document.getElementById('spectator-quiz-display').style.display = 'none';
+                } else if (myRole === 'player') {
+                    showScreen('waiting');
                 }
             }
         });

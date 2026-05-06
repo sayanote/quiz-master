@@ -64,9 +64,9 @@ io.on('connection', (socket) => {
     gameManager.startGame();
   });
 
-  socket.on('submit_answer', (data: { choiceId: string }) => {
-    console.log(`Player ${socket.id} submitted answer: ${data.choiceId}`);
-    gameManager.submitAnswer(socket.id, data.choiceId);
+  socket.on('submit_answer', (data: { choiceIndex: number }) => {
+    console.log(`Player ${socket.id} submitted answer index: ${data.choiceIndex}`);
+    gameManager.submitAnswer(socket.id, data.choiceIndex);
   });
 
   socket.on('disconnect', () => {

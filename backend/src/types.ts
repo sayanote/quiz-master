@@ -15,7 +15,7 @@ export interface Player {
     socketId: string;
     score: number;
     rank?: number;
-    lastAnswer?: string;
+    lastAnswerIndex?: number;
     isCorrect?: boolean;
 }
 
@@ -44,7 +44,8 @@ export interface GameState {
 }
 
 export interface ResultData {
-    correctAnswer: string;
+    correctAnswerIndex: number;
+    correctAnswerText: string;
     playerResults: {
         playerName: string;
         isCorrect: boolean;

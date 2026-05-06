@@ -300,29 +300,24 @@
             // 
             console.log('New Question:', question);
             // const options = question.options || [];
-            const options = [
-                question.correct_answer,
-                question.wrong_option_1,
-                question.wrong_option_2,
-                question.wrong_option_3
-            ];
+            const options = question.options;
 
             // Update Spectator View
-            document.getElementById('spec-question-text').textContent = question.text;
+            document.getElementById('spec-question-text').textContent = question.statement || question.text;
             const specOptions = document.getElementById('spec-options-container');
             specOptions.innerHTML = options.map(opt => `<div class="choice-item">${opt}</div>`).join('');
 
             // Update Player View
-            document.getElementById('player-question-text').textContent = question.text;
+            document.getElementById('player-question-text').textContent = question.statement || question.text;
             const playerOptions = document.getElementById('player-options-container');
             playerOptions.innerHTML = '';
             document.getElementById('answer-feedback').style.display = 'none';
 
-            options.forEach((opt) => {
+            options.forEach((opt, index) => {
                 const btn = document.createElement('button');
                 btn.textContent = opt;
                 btn.onclick = () => {
-                    socket.emit('submit_answer', { choiceId: opt });
+                    socket.emit('submit_answer', { choiceIndex: index });
                     const btns = playerOptions.querySelectorAll('button');
                     btns.forEach(b => b.disabled = true);
                     document.getElementById('answer-feedback').style.display = 'block';
@@ -337,14 +332,14 @@
             const feedback = document.getElementById('answer-feedback');
             if (myRole === 'player') {
                 feedback.style.display = 'block';
-                feedback.textContent = `Correct Answer: ${data.correctAnswer}`;
+                feedback.textContent = `Correct Answer: ${data.correctAnswerText || data.correctAnswer}`;
                 // We could also highlight if this specific player was correct
             }
 
-            // Spectator could also highlight the correct answer here
+            // Spectator highlight
             const specItems = document.querySelectorAll('#spec-options-container .choice-item');
-            specItems.forEach(item => {
-                if (item.textContent === data.correctAnswer) {
+            specItems.forEach((item, index) => {
+                if (index === data.correctAnswerIndex) {
                     item.style.backgroundColor = '#28a745';
                     item.style.color = 'white';
                 }

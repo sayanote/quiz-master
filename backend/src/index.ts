@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import { RegisterPlayerMessage } from './types.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import ConnectionManager from './connectionManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,6 +16,8 @@ const io = new Server(httpServer, {
     origin: '*',
   },
 });
+
+const connectionManager = new ConnectionManager(io);
 
 const PORT = process.env.PORT || 4444;
 
@@ -35,14 +38,19 @@ io.on('connection', (socket) => {
   // wait registration request
   socket.on('registerPlayer', (registerPlayerMessage: RegisterPlayerMessage) => {
     console.log(`${registerPlayerMessage.name} is registered`);
+    connectionManager.addPlayer(socket, registerPlayerMessage.name);
     // Redirect the player to be the game room
-    socket.emit('playerRegistered', {})
+    socket.emit('playerRegistered', { name: registerPlayerMessage.name });
+  });
 
-  })
-
+  socket.on('registerSpectator', () => {
+    console.log(`Spectator registered: ${socket.id}`);
+    connectionManager.addSpectator(socket);
+  });
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
+    connectionManager.removeClient(socket.id);
   });
 });
 

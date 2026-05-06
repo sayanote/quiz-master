@@ -1,12 +1,14 @@
 # Makefile for QuizMaster 2
 
-.PHONY: run-fe build-fe run stop run-manager test-manager migrate-manager createsuperuser-manager help
+.PHONY: run-fe build-fe run stop run-manager test-manager migrate-manager createsuperuser-manager help run-be-dev build-be
 
 # Default target
 help:
     @echo "Available commands:"
     @echo "  make run            - Run all components"
     @echo "  make stop           - Stop all components"
+    @echo "  make run-be-dev     - Start the Backend development server"
+    @echo "  make build-be       - Build the Backend service"
     @echo "  make run-manager    - Start the Quiz Manager (Django) server"
     @echo "  make test-manager   - Run tests for the Quiz Manager"
     @echo "  make migrate-manager - Run Django migrations"
@@ -15,11 +17,15 @@ help:
 # ======================================
 # Frontend Development
 # ======================================
-run-fe:
+run-fe-dev:
     @echo "** Currently this command is not defined. ** Skipped."
 
-build-fe:
-    @echo "** Currently this command is not defined. ** Skipped."
+# ======================================
+# Backend Development
+# ======================================
+run-be-dev:
+    @echo "Run backend development server..."
+    cd backend && npm run dev
 
 
 # ========================================================

@@ -3,12 +3,28 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { RegisterPlayerMessage, GameSettings } from './types.js';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
+import { existsSync } from 'fs';
 import ConnectionManager from './connectionManager.js';
 import GameManager from './gameManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/**
+ * Determine the static directory.
+ * In development (tsx), __dirname is 'src'.
+ * In production (node), __dirname is 'dist'.
+ * If we are in 'dist' but 'src' exists (local prod run), we prefer 'src' for live updates.
+ * In Docker, 'src' won't exist, so we use 'dist' (__dirname).
+ */
+let staticDir = __dirname;
+if (__dirname.endsWith('dist')) {
+  const possibleSrcDir = join(__dirname, '..', 'src');
+  if (existsSync(possibleSrcDir)) {
+    staticDir = possibleSrcDir;
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -23,13 +39,15 @@ const gameManager = new GameManager(io);
 
 const PORT = process.env.BACKEND_PORT || 4444;
 
+app.use(express.static(staticDir));
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
 // Return Player Application
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(join(staticDir, 'index.html'));
 })
 
 

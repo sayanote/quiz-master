@@ -8,8 +8,10 @@ RUN npm install
 
 COPY . .
 RUN npm run build
-# tsc doesn't copy static files like .html, so we do it manually
-RUN cp src/index.html dist/
+# tsc doesn't copy static files, so we do it manually
+# Copy index.html and all audio files to dist
+RUN cp src/index.html dist/ && \
+    cp src/*.mp3 dist/
 
 # Stage 2: Production
 FROM node:24-slim

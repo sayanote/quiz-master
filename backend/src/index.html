@@ -211,6 +211,9 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+        const tickSound = new Audio('/tick.mp3');
+        const correctSound = new Audio('/correctBuzzer.mp3');
+        const wrongSound = new Audio('/wrongBuzzer.mp3');
         let myRole = null;
         let myName = "";
         let typeWriterTimeout = null;
@@ -278,6 +281,9 @@
             function type() {
                 if (i < text.length) {
                     element.textContent += text.charAt(i);
+                    // Play tick sound
+                    tickSound.currentTime = 0;
+                    tickSound.play().catch(e => console.error("Audio play failed:", e));
                     i++;
                     typeWriterTimeout = setTimeout(type, speed);
                 } else {
@@ -369,6 +375,20 @@
             if (myRole === 'player') {
                 feedback.style.display = 'block';
                 feedback.textContent = `Correct Answer: ${data.correctAnswerText || data.correctAnswer}`;
+
+                // Play sound for player
+                const myResult = data.playerResults.find(p => p.playerName === myName);
+                if (myResult && myResult.isCorrect) {
+                    correctSound.currentTime = 0;
+                    correctSound.play().catch(e => console.error("Audio play failed:", e));
+                } else {
+                    wrongSound.currentTime = 0;
+                    wrongSound.play().catch(e => console.error("Audio play failed:", e));
+                }
+            } else {
+                // Play correct sound for host/spectator when answer is revealed
+                correctSound.currentTime = 0;
+                correctSound.play().catch(e => console.error("Audio play failed:", e));
             }
 
             // Spectator highlight
